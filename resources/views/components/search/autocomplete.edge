@@ -1,0 +1,94 @@
+{{-- views/components/search/autocomplete.edge --}}
+<div class="relative flex-1">
+  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+  </div>
+  {{-- Input visible pour l'utilisateur --}}
+  <input
+    type="text"
+    id="searchDisplayInput"
+    placeholder="Entrez une ville ou un code postal"
+    autocomplete="off"
+    class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+  >
+  {{-- Input caché qui contient la vraie valeur de recherche --}}
+  <input
+    type="hidden"
+    id="searchTerm"
+    name="searchTerm"
+    value="{{ searchTerm || '' }}"
+  >
+  {{-- Conteneur des suggestions --}}
+  <div id="suggestions" class="absolute w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 hidden z-50">
+  </div>
+</div>
+
+{{-- Script pour l'autocomplétion --}}
+<script>
+  let debounceTimer
+
+  const searchForm = document.querySelector('form')
+  const searchDisplayInput = document.getElementById('searchDisplayInput')
+  const searchTermInput = document.getElementById('searchTerm')
+  const suggestionsContainer = document.getElementById('suggestions')
+
+  // Initialize display input if value exist
+  if (searchTermInput.value) {
+    searchDisplayInput.value = searchTermInput.value
+  }
+  searchDisplayInput.addEventListener('input', (e) => {
+    clearTimeout(debounceTimer)
+
+    const query = e.target.value.trim()
+    // Update hidden input with searching value
+    searchTermInput.value = query
+
+    if (query.length < 2) {
+      suggestionsContainer.classList.add('hidden')
+      return
+    }
+
+    debounceTimer = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/cities/search?query=${encodeURIComponent(query)}`)
+        const cities = await response.json()
+
+        if (cities.length > 0) {
+          renderSuggestions(cities)
+        } else {
+          suggestionsContainer.classList.add('hidden')
+        }
+      } catch (error) {
+        console.error('Erreur lors de la recherche:', error)
+      }
+    }, 300)
+  })
+
+  function renderSuggestions(cities) {
+    suggestionsContainer.innerHTML = cities.map(city => `
+    <div class="suggestion-item p-3 hover:bg-gray-50 cursor-pointer flex items-center justify-between border-b last:border-b-0"
+         onclick="selectCity('${city.city}', '${city.zip_code}', '${city.city}')">
+      <span class="font-medium text-gray-700">${city.city}</span>
+      <span class="text-gray-500 text-sm">${city.zip_code}</span>
+    </div>
+  `).join('')
+
+    suggestionsContainer.classList.remove('hidden')
+  }
+
+  function selectCity(city, postalCode, searchValue) {
+    searchDisplayInput.value = `${city} (${postalCode})`
+    searchTermInput.value = searchValue
+    suggestionsContainer.classList.add('hidden')
+    searchForm.submit()
+  }
+
+  // Fermer les suggestions si on clique en dehors
+  document.addEventListener('click', (e) => {
+    if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+      suggestionsContainer.classList.add('hidden')
+    }
+  })
+</script>

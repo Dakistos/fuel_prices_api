@@ -1,0 +1,82 @@
+@include('partials/header')
+{{-- views/pages/stations/search.edge --}}
+<div class="container mx-auto px-4 py-8">
+  {{-- En-tête et titre --}}
+  <div class="text-center mb-12">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Rechercher une station</h1>
+    <p class="text-gray-600">Trouvez les prix des carburants près de chez vous</p>
+  </div>
+
+  {{-- Formulaire de recherche centré et stylisé --}}
+  <div class="max-w-2xl mx-auto mb-12">
+    <form action="/stations/search" method="GET" class="bg-white p-6 rounded-xl shadow-lg">
+      <div class="flex gap-4">
+      @include('components/search/autocomplete')
+        <button
+          type="submit"
+          class="px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          Rechercher
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {{-- Message d'erreur --}}
+  @if(error)
+    <div class="max-w-2xl mx-auto mb-12">
+      <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-red-700">{{ error }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  @endif
+
+  {{-- Liste des stations avec séparation améliorée --}}
+  @if(stations && stations.length > 0)
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      @each(station in stations)
+      <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300">
+        {{-- En-tête de la station --}}
+        <div class="p-6 border-b border-gray-100">
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ station.name }}</h3>
+          <div class="space-y-1">
+            <p class="text-sm text-gray-600">{{ station.address }}</p>
+            <p class="text-sm font-medium text-gray-700">{{ station.postal_code }} {{ station.city }}</p>
+          </div>
+        </div>
+
+        {{-- Prix des carburants --}}
+        <div class="p-6 bg-gray-50 rounded-b-xl">
+          <div class="space-y-3">
+            @each(fuel in station.fuels)
+            <div class="flex justify-between items-center py-1 border-b border-gray-200 last:border-0">
+              <span class="text-sm font-medium text-gray-700">{{ fuel.type }}</span>
+              <span class="text-sm font-bold text-blue-600">{{ fuel.price }}€/L</span>
+            </div>
+            @end
+          </div>
+
+          {{-- Mise à jour et actions --}}
+          <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
+             <span class="text-xs text-gray-500">
+               Mis à jour le {{ new Date(station.fuels[0].last_update).toLocaleString() }}
+             </span>
+            <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-800">
+              Détails →
+            </a>
+          </div>
+        </div>
+      </div>
+      @end
+    </div>
+  @endif
+</div>
