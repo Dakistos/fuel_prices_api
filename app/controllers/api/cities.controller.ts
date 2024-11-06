@@ -1,6 +1,7 @@
 import { HttpContext } from '@adonisjs/core/http'
 import CitiesServices from '#services/cities.services'
-
+import { inject } from '@adonisjs/fold'
+@inject()
 export default class CitiesApiController {
   constructor(private citiesServices: CitiesServices) {}
   public async search({ request, response }: HttpContext) {
