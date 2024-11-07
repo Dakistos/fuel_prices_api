@@ -87,7 +87,7 @@
 
   // Fermer les suggestions si on clique en dehors
   document.addEventListener('click', (e) => {
-    if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+    if (!searchDisplayInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
       suggestionsContainer.classList.add('hidden')
     }
   })
