@@ -28,7 +28,7 @@ export default class FuelPriceService {
 
   public async getFuelStationsByCity(searchTerm: string) {
     try {
-      const stations = await db
+      const getStations = await db
         .query()
         .from('fuel_prices')
         .join('stations', 'stations.id', 'fuel_prices.station_id')
@@ -46,26 +46,55 @@ export default class FuelPriceService {
         )
         .orderBy(['stations.address', 'fuel_types.name'])
 
-      const stationsGrouped = stations.reduce((acc, station) => {
-        if (!acc[station.station_id]) {
-          acc[station.station_id] = {
+      const fuelTypesGrouped = getStations.reduce((acc, station) => {
+        const fuelType = station.fuel_type.toLowerCase()
+
+        // Initialize fuel type if it doesn't exist
+        if (!acc[fuelType]) {
+          acc[fuelType] = {
+            stations: [],
+            averagePrice: 0,
+            lowestPrice: Infinity,
+            highestPrice: -Infinity,
+          }
+        }
+
+        const existingStation = acc[fuelType].stations.find(
+          (s: { id: any }) => s.id === station.station_id
+        )
+
+        if (!existingStation) {
+          acc[fuelType].stations.push({
             id: station.station_id,
             address: station.address,
             city: station.city,
             postal_code: station.zip_code,
-            fuels: [],
-          }
+            price: station.price,
+            last_update: station.updated_at,
+          })
+
+          acc[fuelType].lowestPrice = Math.min(acc[fuelType].lowestPrice, station.price)
+          acc[fuelType].highestPrice = Math.max(acc[fuelType].highestPrice, station.price)
         }
 
-        acc[station.station_id].fuels.push({
-          type: station.fuel_type,
-          price: station.price,
-          last_update: station.updated_at,
-        })
         return acc
       }, {})
 
-      return Object.values(stationsGrouped)
+      Object.keys(fuelTypesGrouped).forEach((fuelType) => {
+        const stations = fuelTypesGrouped[fuelType].stations
+        const total = stations.reduce((sum: any, station: { price: any }) => sum + station.price, 0)
+        fuelTypesGrouped[fuelType].averagePrice = Number((total / stations.length).toFixed(3))
+
+        if (fuelTypesGrouped[fuelType].lowestPrice === Infinity) {
+          fuelTypesGrouped[fuelType].lowestPrice = 0
+        }
+
+        if (fuelTypesGrouped[fuelType].highestPrice === -Infinity) {
+          fuelTypesGrouped[fuelType].highestPrice = 0
+        }
+      })
+
+      return fuelTypesGrouped
     } catch (error) {
       console.error('Error in getFuelStationsByCity', error)
       throw error

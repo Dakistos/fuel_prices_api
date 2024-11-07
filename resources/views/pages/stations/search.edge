@@ -41,42 +41,118 @@
   @endif
 
   {{-- Liste des stations avec séparation améliorée --}}
-  @if(stations && stations.length > 0)
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      @each(station in stations)
-      <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300">
-        {{-- En-tête de la station --}}
-        <div class="p-6 border-b border-gray-100">
-          <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ station.name }}</h3>
-          <div class="space-y-1">
-            <p class="text-sm text-gray-600">{{ station.address }}</p>
-            <p class="text-sm font-medium text-gray-700">{{ station.postal_code }} {{ station.city }}</p>
-          </div>
-        </div>
+  @if(stations)
+    <div class="max-w-7xl mx-auto">
+      {{-- Onglets inchangés --}}
+      <div class="border-b border-gray-200">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+          @each((fuelData, fuelType) in stations)
+          <button
+            onclick="switchTab('{{ fuelType }}')"
+            class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm cursor-pointer transition-colors"
+            data-tab="{{ fuelType }}"
+          >
+            {{ fuelType.toUpperCase() }}
+            <span class="ml-2 text-gray-500">({{ fuelData.stations.length }})</span>
+          </button>
+          @end
+        </nav>
+      </div>
 
-        {{-- Prix des carburants --}}
-        <div class="p-6 bg-gray-50 rounded-b-xl">
-          <div class="space-y-3">
-            @each(fuel in station.fuels)
-            <div class="flex justify-between items-center py-1 border-b border-gray-200 last:border-0">
-              <span class="text-sm font-medium text-gray-700">{{ fuel.type }}</span>
-              <span class="text-sm font-bold text-blue-600">{{ fuel.price }}€/L</span>
+      {{-- Contenu des onglets réorganisé --}}
+      @each((fuelData, fuelType) in stations)
+      <div id="tab-{{ fuelType }}" class="fuel-tab hidden">
+        <div class="mt-8 flex gap-8">
+          {{-- Liste principale des stations (côté gauche) --}}
+          <div class="flex-1">
+            <div class="space-y-4">
+              @each(station in fuelData.stations)
+              <div class="bg-white p-4 shadow rounded-lg hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p class="text-gray-600">{{ station.address }}</p>
+                    <p class="font-medium text-gray-700">{{ station.postal_code }} {{ station.city }}</p>
+                  </div>
+                  <div class="text-xl font-bold text-blue-600">{{ station.price }}€/L</div>
+                </div>
+                <div class="mt-2 text-xs text-gray-500">
+                  Mis à jour le {{ new Date(station.last_update).toLocaleString() }}
+                </div>
+              </div>
+              @end
             </div>
-            @end
           </div>
 
-          {{-- Mise à jour et actions --}}
-          <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
-             <span class="text-xs text-gray-500">
-               Mis à jour le {{ new Date(station.fuels[0].last_update).toLocaleString() }}
-             </span>
-            <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-800">
-              Détails →
-            </a>
+          {{-- Cartes prix bas/haut (côté droit) --}}
+          <div class="w-80 space-y-6">
+            {{-- Prix le plus bas --}}
+            <div class="bg-white rounded-lg shadow p-6">
+              <div class="mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Prix le plus bas</h3>
+                <div class="text-3xl font-bold text-green-600 mt-2">{{ fuelData.lowestPrice }}€/L</div>
+              </div>
+              @each(station in fuelData.stations.filter(s => s.price === fuelData.lowestPrice))
+              <div class="mt-3 pt-3 border-t border-gray-100">
+                <p class="font-medium text-gray-700">{{ station.address }}</p>
+                <p class="text-sm text-gray-600">{{ station.postal_code }} {{ station.city }}</p>
+                <p class="text-xs text-gray-500 mt-1">
+                  Mis à jour le {{ new Date(station.last_update).toLocaleString() }}
+                </p>
+              </div>
+              @end
+            </div>
+
+            {{-- Prix le plus haut --}}
+            <div class="bg-white rounded-lg shadow p-6">
+              <div class="mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Prix le plus haut</h3>
+                <div class="text-3xl font-bold text-red-600 mt-2">{{ fuelData.highestPrice }}€/L</div>
+              </div>
+              @each(station in fuelData.stations.filter(s => s.price === fuelData.highestPrice))
+              <div class="mt-3 pt-3 border-t border-gray-100">
+                <p class="font-medium text-gray-700">{{ station.address }}</p>
+                <p class="text-sm text-gray-600">{{ station.postal_code }} {{ station.city }}</p>
+                <p class="text-xs text-gray-500 mt-1">
+                  Mis à jour le {{ new Date(station.last_update).toLocaleString() }}
+                </p>
+              </div>
+              @end
+            </div>
           </div>
         </div>
       </div>
       @end
     </div>
+
+    {{-- Script pour gérer les onglets --}}
+    <script>
+      // Afficher le premier onglet par défaut
+      document.addEventListener('DOMContentLoaded', () => {
+        const firstTab = document.querySelector('.tab-button')
+        if (firstTab) {
+          firstTab.click()
+        }
+      })
+
+      function switchTab(fuelType) {
+        // Mettre à jour les styles des onglets
+        document.querySelectorAll('.tab-button').forEach(button => {
+          if (button.dataset.tab === fuelType) {
+            button.classList.add('border-blue-500', 'text-blue-600')
+            button.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300')
+          } else {
+            button.classList.remove('border-blue-500', 'text-blue-600')
+            button.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300')
+          }
+        })
+
+        // Afficher/masquer les contenus
+        document.querySelectorAll('.fuel-tab').forEach(tab => {
+          tab.classList.add('hidden')
+        })
+        document.getElementById(`tab-${fuelType}`).classList.remove('hidden')
+      }
+    </script>
   @endif
+</div>
 </div>
