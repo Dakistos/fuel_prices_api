@@ -19,7 +19,8 @@ export default class FuelPriceService {
           'stations.address',
           'stations.city',
           'stations.zip_code',
-          'stations.geom as coordinates',
+          db.raw('ST_X(geom::geometry) as longitude'),
+          db.raw('ST_Y(geom::geometry) as latitude'),
           'stations.is_24h as fuel_pomp_schedules',
           'fuel_types.name as fuel_type',
           'fuel_prices.price',
@@ -34,7 +35,7 @@ export default class FuelPriceService {
             address: item.address,
             city: item.city,
             postal_code: item.zip_code,
-            coordinates: item.coordinates,
+            coordinates: [item.longitude, item.latitude],
             is_24h: item.fuel_pomp_schedules,
           }
         }

@@ -41,9 +41,7 @@
         <div class="border-t border-gray-200">
           <div class="px-6 py-4">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">Localisation</h2>
-            <div class="h-64 bg-gray-100 rounded-lg">
-              {{-- Ici intégrer une carte avec les coordonnées --}}
-            </div>
+            <div id="map" class="h-96 rounded-lg shadow-inner"></div>
           </div>
         </div>
       @endif
@@ -60,3 +58,41 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Sécuriser les données avec safe pour éviter les injections XSS
+    const stationData = {
+      latitude: {{ station.details.coordinates[1] }},
+      longitude: {{ station.details.coordinates[0] }},
+      address: `{{ station.details.address }}`,
+      city: `{{ station.details.city }}`,
+      postal_code: `{{ station.details.postal_code }}`
+    }
+
+    // Initialiser la carte
+    const map = L.map('map').setView([stationData.latitude, stationData.longitude], 15)
+
+    // Ajouter le layer OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map)
+
+    // Ajouter le marqueur de la station
+    const marker = L.marker([stationData.latitude, stationData.longitude]).addTo(map)
+      .bindPopup(`
+      <strong>${stationData.address}</strong><br>
+      ${stationData.postal_code} ${stationData.city}
+    `)
+      .openPopup()
+
+    // Ajouter un cercle pour montrer la zone
+    L.circle([stationData.latitude, stationData.longitude], {
+      color: 'blue',
+      fillColor: '#30a4f2',
+      fillOpacity: 0.1,
+      radius: 500
+    }).addTo(map)
+  })
+</script>
