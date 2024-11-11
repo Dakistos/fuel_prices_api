@@ -32,4 +32,41 @@ export default class StationsController {
       })
     }
   }
+
+  public async show({ params, view }: HttpContext) {
+    try {
+      const { id } = params
+      const station = await this.fuelPriceService.getFuelStationsById(Number.parseInt(id))
+
+      // group data
+      const stationData = station.reduce((acc, item) => {
+        if (!acc.details) {
+          acc.details = {
+            id: item.station_id,
+            address: item.address,
+            city: item.city,
+            postal_code: item.zip_code,
+            coordinates: item.coordinates,
+            is_24h: item.fuel_pomp_schedules,
+          }
+        }
+
+        acc.fuels = acc.fuels || []
+        acc.fuels.push({
+          type: item.fuel_type,
+          price: item.price,
+          last_update: item.updated_at,
+        })
+
+        return acc
+      }, {})
+
+      return view.render('pages/stations/show', { station: stationData })
+    } catch (error) {
+      return view.render('pages/stations/search', {
+        stations: [],
+        error: 'Une erreur est survenue',
+      })
+    }
+  }
 }

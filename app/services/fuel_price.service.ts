@@ -5,23 +5,28 @@ import db from '@adonisjs/lucid/services/db'
 export default class FuelPriceService {
   constructor() {}
 
-  public async getAveragePricesByDepartment() {
+  public async getFuelStationsById(id: number) {
     try {
+      //TODO: add provided_services in stations table and also check geometry field behaviour
       return await db
         .query()
-        .from(`fuel_prices`)
+        .from('fuel_prices')
         .join('stations', 'stations.id', 'fuel_prices.station_id')
         .join('fuel_types', 'fuel_types.id', 'fuel_prices.fuel_type_id')
-        .join('departments', 'departments.code', 'stations.department_code')
-        .groupBy('departments.code', 'fuel_types.name')
+        .where('stations.id', `${id}`)
         .select(
-          'departments.code as dpt_id',
+          'stations.id as station_id',
+          'stations.address',
+          'stations.city',
+          'stations.zip_code',
+          'stations.geom as coordinates',
+          'stations.is_24h as fuel_pomp_schedules',
           'fuel_types.name as fuel_type',
-          db.raw('ROUND(AVG(fuel_prices.price)::numeric, 3) as average_price')
+          'fuel_prices.price',
+          'fuel_prices.updated_at'
         )
-        .orderBy('departments.code', 'asc')
     } catch (error) {
-      console.error('Error in getAveragepricesByDpt:', error)
+      console.error('Error in getFuelStationsById', error)
       throw error
     }
   }
@@ -97,6 +102,27 @@ export default class FuelPriceService {
       return fuelTypesGrouped
     } catch (error) {
       console.error('Error in getFuelStationsByCity', error)
+      throw error
+    }
+  }
+
+  public async getAveragePricesByDepartment() {
+    try {
+      return await db
+        .query()
+        .from(`fuel_prices`)
+        .join('stations', 'stations.id', 'fuel_prices.station_id')
+        .join('fuel_types', 'fuel_types.id', 'fuel_prices.fuel_type_id')
+        .join('departments', 'departments.code', 'stations.department_code')
+        .groupBy('departments.code', 'fuel_types.name')
+        .select(
+          'departments.code as dpt_id',
+          'fuel_types.name as fuel_type',
+          db.raw('ROUND(AVG(fuel_prices.price)::numeric, 3) as average_price')
+        )
+        .orderBy('departments.code', 'asc')
+    } catch (error) {
+      console.error('Error in getAveragepricesByDpt:', error)
       throw error
     }
   }

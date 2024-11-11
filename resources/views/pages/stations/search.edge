@@ -68,16 +68,18 @@
             <div class="space-y-4">
               @each(station in fuelData.stations)
               <div class="bg-white p-4 shadow rounded-lg hover:shadow-md transition-shadow">
-                <div class="flex justify-between items-start">
-                  <div>
-                    <p class="text-gray-600">{{ station.address }}</p>
-                    <p class="font-medium text-gray-700">{{ station.postal_code }} {{ station.city }}</p>
+                <a href="/stations/{{ station.id }}" class="block">
+                  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div>
+                      <p class="text-gray-600">{{ station.address }}</p>
+                      <p class="font-medium text-gray-700">{{ station.postal_code }} {{ station.city }}</p>
+                    </div>
+                    <div class="text-xl font-bold text-blue-600 sm:ml-4">{{ station.price }}€/L</div>
                   </div>
-                  <div class="text-xl font-bold text-blue-600">{{ station.price }}€/L</div>
-                </div>
-                <div class="mt-2 text-xs text-gray-500">
-                  Mis à jour le {{ new Date(station.last_update).toLocaleString() }}
-                </div>
+                  <div class="mt-2 text-xs text-gray-500">
+                    Mis à jour le {{ new Date(station.last_update).toLocaleString() }}
+                  </div>
+                </a>
               </div>
               @end
             </div>

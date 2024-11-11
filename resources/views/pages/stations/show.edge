@@ -1,0 +1,62 @@
+@include('partials/header')
+{{-- views/pages/stations/show.edge --}}
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-4xl mx-auto">
+    {{-- En-tête station --}}
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div class="p-6">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Station {{ station.details.address }}</h1>
+        <p class="text-gray-600">{{ station.details.postal_code }} {{ station.details.city }}</p>
+
+        @if(station.details.is_24h)
+          <div class="mt-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+            <svg class="h-4 w-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Ouvert 24h/24
+          </div>
+        @endif
+      </div>
+
+      {{-- Prix des carburants --}}
+      <div class="border-t border-gray-200">
+        <div class="px-6 py-4">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Prix des carburants</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            @each(fuel in station.fuels)
+            <div class="bg-gray-50 rounded-lg p-4">
+              <div class="text-sm text-gray-500">{{ fuel.type }}</div>
+              <div class="mt-1 text-2xl font-bold text-blue-600">{{ fuel.price }}€/L</div>
+              <div class="mt-2 text-xs text-gray-500">
+                Mis à jour le {{ new Date(fuel.last_update).toLocaleString() }}
+              </div>
+            </div>
+            @end
+          </div>
+        </div>
+      </div>
+
+      {{-- Carte si coordinates disponibles --}}
+      @if(station.details.coordinates)
+        <div class="border-t border-gray-200">
+          <div class="px-6 py-4">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Localisation</h2>
+            <div class="h-64 bg-gray-100 rounded-lg">
+              {{-- Ici intégrer une carte avec les coordonnées --}}
+            </div>
+          </div>
+        </div>
+      @endif
+    </div>
+
+    {{-- Bouton retour --}}
+    <div class="mt-6">
+      <a href="javascript:history.back()" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Retour à la liste
+      </a>
+    </div>
+  </div>
+</div>

@@ -19,6 +19,7 @@ const DepartmentsApiController = () => import('#controllers/api/departments.cont
 // Routes HTTP
 router.get('/', [DepartmentsController, 'index'])
 router.get('/stations/search', [StationsController, 'search'])
+router.get('/stations/:id', [StationsController, 'show'])
 
 // Routes API
 router
