@@ -8,7 +8,7 @@ export default class FuelPriceService {
   public async getFuelStationsById(id: number) {
     try {
       //TODO: add provided_services in stations table and also check geometry field behaviour
-      return await db
+      const getStation = await db
         .query()
         .from('fuel_prices')
         .join('stations', 'stations.id', 'fuel_prices.station_id')
@@ -25,6 +25,29 @@ export default class FuelPriceService {
           'fuel_prices.price',
           'fuel_prices.updated_at'
         )
+
+      // Formatted data
+      return getStation.reduce((acc, item) => {
+        if (!acc.details) {
+          acc.details = {
+            id: item.station_id,
+            address: item.address,
+            city: item.city,
+            postal_code: item.zip_code,
+            coordinates: item.coordinates,
+            is_24h: item.fuel_pomp_schedules,
+          }
+        }
+
+        acc.fuels = acc.fuels || []
+        acc.fuels.push({
+          type: item.fuel_type,
+          price: item.price,
+          last_update: item.updated_at,
+        })
+
+        return acc
+      }, {})
     } catch (error) {
       console.error('Error in getFuelStationsById', error)
       throw error
