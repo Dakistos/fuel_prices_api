@@ -26,6 +26,7 @@ router
   .group(() => {
     router.get('/departments', [DepartmentsApiController, 'index'])
     router.get('/stations/search', [StationsApiController, 'search'])
+    router.get('/stations/:id', [StationsApiController, 'show'])
     router.get('/cities/search', [CitiesApiController, 'search'])
   })
   .prefix('/api')

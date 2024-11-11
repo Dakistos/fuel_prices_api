@@ -28,4 +28,36 @@ export default class StationsApiController {
       })
     }
   }
+
+  public async show({ params, response }: HttpContext) {
+    try {
+      const { id } = params
+
+      if (!id || Number.isNaN(Number.parseInt(id))) {
+        return response.status(400).json({
+          status: 'error',
+          message: 'ID de station invalide',
+        })
+      }
+
+      const station = await this.fuelPriceService.getFuelStationsById(id)
+
+      if (!station || station.length === 0) {
+        return response.status(404).json({
+          status: 'error',
+          message: 'Station non trouvée',
+        })
+      }
+
+      return response.json({
+        status: 'success',
+        data: station,
+      })
+    } catch (error) {
+      return response.status(500).json({
+        status: 'error',
+        message: 'Erreur lors de la recherche',
+      })
+    }
+  }
 }
