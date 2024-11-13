@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
+import type { ProvidedServices, GeometryPoint } from '#types/station.js'
 
 export default class Stations extends BaseModel {
   @column({ isPrimary: true })
@@ -27,11 +28,13 @@ export default class Stations extends BaseModel {
   declare region_code: string
 
   @column()
-  //TODO: HANDLE THE GEOMETRY TYPE
-  declare geom: string
+  declare geom: GeometryPoint
 
   @column()
   declare is_24h: boolean
+
+  @column()
+  declare services: ProvidedServices
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

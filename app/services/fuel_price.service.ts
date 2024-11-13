@@ -19,6 +19,7 @@ export default class FuelPriceService {
           'stations.address',
           'stations.city',
           'stations.zip_code',
+          'stations.services',
           db.raw('ST_X(geom::geometry) as longitude'),
           db.raw('ST_Y(geom::geometry) as latitude'),
           'stations.is_24h as fuel_pomp_schedules',
