@@ -7,7 +7,6 @@ export default class FuelPriceService {
 
   public async getFuelStationsById(id: number) {
     try {
-      //TODO: add provided_services in stations table and also check geometry field behaviour
       const getStation = await db
         .query()
         .from('fuel_prices')
@@ -37,6 +36,7 @@ export default class FuelPriceService {
             city: item.city,
             postal_code: item.zip_code,
             coordinates: [item.longitude, item.latitude],
+            services: item.services,
             is_24h: item.fuel_pomp_schedules,
           }
         }
