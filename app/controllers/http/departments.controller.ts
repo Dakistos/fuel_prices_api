@@ -1,6 +1,6 @@
 import { HttpContext } from '@adonisjs/core/http'
 import Department from '#models/department'
-import FuelPriceService from '#services/fuel_price.service'
+import FuelPriceService from '#services/stations.service'
 import { inject } from '@adonisjs/fold'
 
 @inject()

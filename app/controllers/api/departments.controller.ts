@@ -1,19 +1,12 @@
 import { HttpContext } from '@adonisjs/core/http'
-import Department from '#models/department'
-import FuelPriceService from '#services/fuel_price.service'
 import { inject } from '@adonisjs/fold'
+import DepartmentsServices from '#services/departments.services'
 @inject()
 export default class DepartmentsApiController {
-  constructor(private fuelPriceService: FuelPriceService) {}
+  constructor(private departmentsServices: DepartmentsServices) {}
 
   public async index({ response }: HttpContext) {
-    const departments = await Department.query().select('code', 'name')
-    const averagePrices = await this.fuelPriceService.getAveragePricesByDepartment()
-
-    const departmentsWithPrices = departments.map((dept) => ({
-      ...dept.toJSON(),
-      fuelPrices: averagePrices.filter((price) => price.dpt_id === dept.code),
-    }))
+    const departmentsWithPrices = await this.departmentsServices.getAveragePricesByDepartment()
 
     return response.json({
       status: 'success',

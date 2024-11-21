@@ -1,4 +1,4 @@
-import FuelPriceService from '#services/fuel_price.service'
+import FuelPriceService from '#services/stations.service'
 import { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/fold'
 @inject()
