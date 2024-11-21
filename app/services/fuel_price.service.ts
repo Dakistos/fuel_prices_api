@@ -5,6 +5,10 @@ import db from '@adonisjs/lucid/services/db'
 export default class FuelPriceService {
   constructor() {}
 
+  /**
+   * Function to select fuel stations by id
+   * @params: id: number
+   * */
   public async getFuelStationsById(id: number) {
     try {
       const getStation = await db
@@ -56,6 +60,10 @@ export default class FuelPriceService {
     }
   }
 
+  /**
+   * Function to select fuel stations by city
+   * @params: searchTerm: string
+   * */
   public async getFuelStationsByCity(searchTerm: string) {
     try {
       const getStations = await db
@@ -131,6 +139,9 @@ export default class FuelPriceService {
     }
   }
 
+  /**
+   * Function to find average fuel prices by department
+   * */
   public async getAveragePricesByDepartment() {
     try {
       return await db

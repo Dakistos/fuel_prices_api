@@ -6,7 +6,7 @@ import { inject } from '@adonisjs/fold'
 @inject()
 export default class DepartmentsController {
   constructor(private fuelPriceService: FuelPriceService) {}
-  async index({ view }: HttpContext) {
+  public async index({ view }: HttpContext) {
     try {
       const departments = await Department.query().select('code', 'name').orderBy('code', 'asc')
       const averagePrices = await this.fuelPriceService.getAveragePricesByDepartment()

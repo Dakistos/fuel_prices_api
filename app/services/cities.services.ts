@@ -5,6 +5,10 @@ import db from '@adonisjs/lucid/services/db'
 export default class CitiesServices {
   constructor() {}
 
+  /**
+   * Function to select cities from typing
+   * @params: query: string
+   * */
   public async getCities(query: string) {
     try {
       return await db

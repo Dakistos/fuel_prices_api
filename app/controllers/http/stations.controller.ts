@@ -6,6 +6,10 @@ import { inject } from '@adonisjs/fold'
 export default class StationsController {
   constructor(private fuelPriceService: FuelPriceService) {}
 
+  /**
+   * Search controller function to find a fuel station
+   * @params: searchTerm: string
+   * */
   public async search({ view, request }: HttpContext) {
     const { searchTerm } = request.qs()
 
@@ -33,6 +37,10 @@ export default class StationsController {
     }
   }
 
+  /**
+   * Show controller function to display a fuel station by id
+   * @params: id: number
+   * */
   public async show({ params, view }: HttpContext) {
     try {
       const { id } = params
