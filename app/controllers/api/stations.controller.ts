@@ -9,7 +9,7 @@ export default class StationsApiController {
    * Search controller function to find a fuel station
    * @params: searchTerm: string
    * */
-  public async search({ request, response }: HttpContext) {
+  public async getFuelStationsByCity({ request, response }: HttpContext) {
     const { searchTerm } = request.qs()
 
     if (!searchTerm || searchTerm.length < 2) {
@@ -37,7 +37,7 @@ export default class StationsApiController {
    * Show controller function to display a fuel station by id
    * @params: id: number
    * */
-  public async show({ params, response }: HttpContext) {
+  public async getFuelStationsById({ params, response }: HttpContext) {
     try {
       const { id } = params
 

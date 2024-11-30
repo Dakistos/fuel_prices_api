@@ -10,7 +10,7 @@ export default class StationsController {
    * Search controller function to find a fuel station
    * @params: searchTerm: string
    * */
-  public async search({ view, request }: HttpContext) {
+  public async getFuelStationsByCity({ view, request }: HttpContext) {
     const { searchTerm } = request.qs()
 
     if (!searchTerm || searchTerm.length < 2) {
@@ -41,7 +41,7 @@ export default class StationsController {
    * Show controller function to display a fuel station by id
    * @params: id: number
    * */
-  public async show({ params, view }: HttpContext) {
+  public async getFuelStationsById({ params, view }: HttpContext) {
     try {
       const { id } = params
       const stationData = await this.fuelPriceService.getFuelStationsById(Number.parseInt(id))
