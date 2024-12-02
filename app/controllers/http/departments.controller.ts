@@ -4,7 +4,7 @@ import DepartmentsServices from '#services/departments.services'
 @inject()
 export default class DepartmentsController {
   constructor(private departmentsServices: DepartmentsServices) {}
-  public async index({ view }: HttpContext) {
+  public async getPricesByDepartment({ view }: HttpContext) {
     try {
       const departmentsWithPrices = await this.departmentsServices.getAveragePricesByDepartment()
 

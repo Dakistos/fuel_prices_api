@@ -5,7 +5,7 @@ import DepartmentsServices from '#services/departments.services'
 export default class DepartmentsApiController {
   constructor(private departmentsServices: DepartmentsServices) {}
 
-  public async index({ response }: HttpContext) {
+  public async getPricesByDepartment({ response }: HttpContext) {
     const departmentsWithPrices = await this.departmentsServices.getAveragePricesByDepartment()
 
     return response.json({

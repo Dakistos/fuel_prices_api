@@ -4,7 +4,7 @@ import { inject } from '@adonisjs/fold'
 @inject()
 export default class CitiesApiController {
   constructor(private citiesServices: CitiesServices) {}
-  public async search({ request, response }: HttpContext) {
+  public async getCities({ request, response }: HttpContext) {
     const { query } = request.qs()
 
     if (!query || query.length < 2) {

@@ -17,16 +17,16 @@ const DepartmentsApiController = () => import('#controllers/api/departments.cont
 // router.on('/').render('pages/start')
 
 // Routes HTTP
-router.get('/', [DepartmentsController, 'index'])
+router.get('/', [DepartmentsController, 'getPricesByDepartment'])
 router.get('/stations/search', [StationsController, 'getFuelStationsByCity'])
 router.get('/stations/:id', [StationsController, 'getFuelStationsById'])
 
 // Routes API
 router
   .group(() => {
-    router.get('/departments', [DepartmentsApiController, 'index'])
+    router.get('/departments', [DepartmentsApiController, 'getPricesByDepartment'])
     router.get('/stations/search', [StationsApiController, 'getFuelStationsByCity'])
     router.get('/stations/:id', [StationsApiController, 'getFuelStationsById'])
-    router.get('/cities/search', [CitiesApiController, 'search'])
+    router.get('/cities/search', [CitiesApiController, 'getCities'])
   })
   .prefix('/api')
